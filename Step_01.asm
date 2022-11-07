@@ -105,17 +105,26 @@ NextOp			tst.b		(a0)
 				bra 		NextOp
 \quit			rts
 
-GetNum			movem.l		a0/d0,-(a7)
+GetNum			movem.l		a1/a2/d0,-(a7)
 				clr.l		d0
 				clr.l		d1
 \loop			
+				jsr			NextOp
+				move.l		(a0),d1
+				move.l		#0,(a0)
+				
+				jsr			Convert
+				tst.l		a7
+				beq			#%11111011,ccr
+				jsr			\false
+				move.l		d1,(a0)
+				
 
-
-\true			adda.l		#1,a7
-				ori.b 		#%00000100,ccr ; Set the Z flag to 1 (true).
+\true			addq.l		#1,a7
+				ori.b 		#%00000100,ccr 
 				rts
 \false			movem.l		(a7)+,a0/d0
-				andi.b 		#%11111011,ccr ; Set the Z flag to 0 (false).
+				andi.b 		#%11111011,ccr 
 				rts
 					
 String1 		dc.b 		"104+9*2-3",0
